@@ -1,3 +1,14 @@
+/**
+ * @file WindowsServer.cpp
+ * 
+ * @author John Glatts
+ * @brief  Source file for the WindowsServer class
+ * @version 0.1
+ * @date 2022-12-03
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include "WindowsServer.h"
 #include <stdio.h>
 #include <string.h>
@@ -16,16 +27,20 @@ WindowsServer::WindowsServer(int port_num) {
 	port = port_num;
 }
 
-bool WindowsServer::init() {
+bool WindowsServer::init(int argc, char** argv) {
 	WSADATA wsa;
 
-	// WSAStartup() must be called first for any windows-socket program
+	if (argc > 1) {
+		if (isdigit(argv[1][0])) {
+			port = atoi(argv[1]);
+		}
+	}
+
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
 		printf("Failed. Error Code : %d\n", WSAGetLastError());
 		return false;
 	}
 
-	// check if the server has been started successfully
 	if (!initServer()) {
 		return false;
 	}
@@ -44,6 +59,7 @@ bool WindowsServer::initServer() {
 	}
 
 	server.sin_family = AF_INET;
+	// need to bind addr to 192.168.1.152
 	server.sin_addr.s_addr = INADDR_ANY;	// default source address
 	server.sin_port = htons(port);			// port supplied by user
 
@@ -58,6 +74,10 @@ bool WindowsServer::initServer() {
 
 	listen(server_socket, 3);
 	return true;
+}
+
+void WindowsServer::testCallBacks(const char* s) {
+	// todo
 }
 
 void WindowsServer::addURL(const char* url) {
@@ -95,8 +115,12 @@ bool WindowsServer::runServer() {
 }
 
 void WindowsServer::parseURL(SOCKET client_socket, char* ip, char* recv_buf) {
-	if (checkURL(recv_buf)) {
-		sendResponse(client_socket, ip);
+	int i;
+	printf("%s\n", recv_buf);
+
+	if ((i = checkURL(recv_buf)) != -1) {
+		const char* msg = response_callbacks.at(i).url_callback();
+		send(client_socket, msg, strlen(msg), 0);
 	}
 	else {
 		char msg[1024] =
@@ -113,11 +137,17 @@ void WindowsServer::parseURL(SOCKET client_socket, char* ip, char* recv_buf) {
 	}
 }
 
-bool WindowsServer::checkURL(char* buff) {
+void WindowsServer::addCallBack(const char* url_str, const char* (fp)(void)) {
+	URL url = { url_str, fp};
+	response_callbacks.push_back(url);
+}
+
+int WindowsServer::checkURL(char* buff) {
 	char* token;
 	char* next;
 	char  url[1024];
 	int i;
+	int ret = -1;
 
 	// extract the GET request from client 
 	token = strtok_s(buff, "\n", &next);
@@ -139,13 +169,15 @@ bool WindowsServer::checkURL(char* buff) {
 	}
 
 	url[i] = '\0';
-	printf("%s\n", url);
-	for (int i = 0; i < valid_urls.size(); ++i) {
-		if (strcmp(valid_urls.at(i), url) == 0)
-			return true;
+	printf("URL from client: %s\n", url);
+	for (int i = 0; i < response_callbacks.size(); ++i) {
+		if (strcmp(response_callbacks.at(i).url, url) == 0) {
+			ret = i;
+			break;
+		}
 	}
 
-	return false;
+	return ret;
 }
 
 bool WindowsServer::getPacket(SOCKET client_sock, char* recv_buff) {
