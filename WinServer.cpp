@@ -20,7 +20,8 @@ const char* callBack() {
 	"Content-Length: 3000\n"
 	"Accept-Ranges: bytes\n"
 	"Connection: keep-alive\n\n"
-	"<h1>Hello World!</h1>\n";
+	"<h1>Hello World!</h1>\n"
+	"<img src=\"https://ih1.redbubble.net/image.917633532.5454/flat,750x1000,075,f.jpg\">\n";
 	return msg;
 }
 

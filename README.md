@@ -1,23 +1,12 @@
 # Windows-Web-Server
-Windows Web Server
-
-
-
+Windows TCP web server implementation
 
 
 ### Example usage 
-```
-#include "WindowsServer.h"
+Please see WinServer.cpp for example usage
 
-int main(int argc, char* argv[]) {
-	WindowsServer winServer;
 
-	winServer.addURL("/");
-	winServer.addURL("/hello/");
-
-	if (winServer.init()) 
-		winServer.runServer();
-
-	return true;
-}
-```
+### Demo code
+Compiler: MSVC 19.34.31933
+Compile using: cl WinServer.cpp WindowsServer.cpp /EHsc
+Run using: WinServer

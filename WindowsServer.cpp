@@ -59,7 +59,6 @@ bool WindowsServer::initServer() {
 	}
 
 	server.sin_family = AF_INET;
-	// need to bind addr to 192.168.1.152
 	server.sin_addr.s_addr = INADDR_ANY;	// default source address
 	server.sin_port = htons(port);			// port supplied by user
 
@@ -116,25 +115,26 @@ bool WindowsServer::runServer() {
 
 void WindowsServer::parseURL(SOCKET client_socket, char* ip, char* recv_buf) {
 	int i;
+	const char* msg;
 	printf("%s\n", recv_buf);
 
 	if ((i = checkURL(recv_buf)) != -1) {
-		const char* msg = response_callbacks.at(i).url_callback();
-		send(client_socket, msg, strlen(msg), 0);
+		// get the HTTP response message provided
+		// by the user specified callback 
+		msg = response_callbacks.at(i).url_callback();
 	}
 	else {
-		char msg[1024] =
-			"HTTP/1.1 200 OK\n"
-			"Server: JDG Server\n"
-			"Content-Type: text/html\n"
-			"Content-Length: 3000\n"
-			"Accept-Ranges: bytes\n"
-			"Connection: keep-alive\n\n"
-			"<h1>Sorry this URL is not valid!</h1>\n"
-			"<img src=\"https://www.iconpacks.net/icons/2/free-sad-face-icon-2691-thumb.png\">\n";
-		send(client_socket, msg, strlen(msg), 0);
-		//while (recv(client_socket, recv_buf, 300, 0) > 0) {}
+		msg =
+		"HTTP/1.1 200 OK\n"
+		"Server: JDG Server\n"
+		"Content-Type: text/html\n"
+		"Content-Length: 3000\n"
+		"Accept-Ranges: bytes\n"
+		"Connection: keep-alive\n\n"
+		"<h1>Sorry this URL is not valid!</h1>\n"
+		"<img src=\"https://www.iconpacks.net/icons/2/free-sad-face-icon-2691-thumb.png\">\n";
 	}
+	send(client_socket, msg, strlen(msg), 0);
 }
 
 void WindowsServer::addCallBack(const char* url_str, const char* (fp)(void)) {
