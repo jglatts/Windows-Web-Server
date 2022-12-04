@@ -7,6 +7,6 @@ Please see WinServer.cpp for example usage
 
 
 ### Demo code
-Compiler: MSVC 19.34.31933
-Compile using: cl WinServer.cpp WindowsServer.cpp /EHsc
-Run using: WinServer
+Compiler: MSVC 19.34.31933 <br />
+Compile using: cl WinServer.cpp WindowsServer.cpp /EHsc <br />
+Run using: WinServer <br />
