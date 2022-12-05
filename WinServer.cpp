@@ -12,6 +12,18 @@
  */
 #include "WindowsServer.h"
 
+const char* callBackTwo() {
+	const char* msg =
+	"HTTP/1.1 200 OK\n"
+	"Server: JDG Server\n"
+	"Content-Type: text/html\n"
+	"Content-Length: 3000\n"
+	"Accept-Ranges: bytes\n"
+	"Connection: keep-alive\n\n"
+	"<h1>I Love Function Pointers!!</h1>\n";
+	return msg;
+}
+
 const char* callBack() {
 	const char* msg =
 	"HTTP/1.1 200 OK\n"
@@ -28,10 +40,12 @@ const char* callBack() {
 int main(int argc, char* argv[]) {
 	WindowsServer winServer;
 
-	if (winServer.init(argc, argv)) { 
-		winServer.addCallBack("/", callBack);	
-		winServer.runServer();
-	}
+	if (!winServer.init(argc, argv)) 
+		return 0;
 
-	return true;
+	winServer.addCallBack("/", callBack);	
+	winServer.addCallBack("/test", callBackTwo);	
+	winServer.runServer();
+
+	return 1;
 }
