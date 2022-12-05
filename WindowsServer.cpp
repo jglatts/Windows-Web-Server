@@ -59,6 +59,8 @@ bool WindowsServer::initServer() {
 	}
 
 	server.sin_family = AF_INET;
+	// bind to local IP 192.168.1.152
+	// use inet_addr(IP)
 	server.sin_addr.s_addr = INADDR_ANY;	// default source address
 	server.sin_port = htons(port);			// port supplied by user
 
@@ -137,7 +139,7 @@ void WindowsServer::parseURL(SOCKET client_socket, char* ip, char* recv_buf) {
 	send(client_socket, msg, strlen(msg), 0);
 }
 
-void WindowsServer::addCallBack(const char* url_str, const char* (fp)(void)) {
+void WindowsServer::addCallBack(const char* url_str, const char* (*fp)(void)) {
 	URL url = { url_str, fp};
 	response_callbacks.push_back(url);
 }
