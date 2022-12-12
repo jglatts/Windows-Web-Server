@@ -41,11 +41,11 @@ int main(int argc, char* argv[]) {
 	WindowsServer winServer;
 
 	if (!winServer.init(argc, argv)) 
-		return 0;
+		return 1;
 
 	winServer.addCallBack("/", callBack);	
 	winServer.addCallBack("/test", callBackTwo);	
 	winServer.runServer();
 
-	return 1;
+	return 0;
 }
