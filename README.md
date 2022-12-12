@@ -22,10 +22,10 @@ const char* callBack() {
 
 int main(int argc, char* argv[]) {
 	WindowsServer winServer;
-	if (!winServer.init(argc, argv)) return 0;
+	if (!winServer.init(argc, argv)) return 1;
 	winServer.addCallBack("/test", callBack);	
 	winServer.runServer();
-	return 1;
+	return 0;
 }
 ```
 
